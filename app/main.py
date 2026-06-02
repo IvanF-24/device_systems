@@ -2,8 +2,12 @@ from fastapi import FastAPI
 from app.routes.user_routes import router
 
 app = FastAPI(
-    title="device_systems",
-    version="1.0"
+    title="device_systems API",
+    description="API REST para la gestión de usuarios del sistema device_systems",
+    version="2.0.0",
+    contact={
+        "name": "Ivan Florez"
+    }
 )
 
 app.include_router(router)

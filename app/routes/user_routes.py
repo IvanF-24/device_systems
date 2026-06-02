@@ -1,91 +1,143 @@
-from fastapi import APIRouter, HTTPException, Query, Response
-from app.schemas.user_schema import UserCreate, UserResponse
+from fastapi import (
+    APIRouter,
+    Depends,
+    Query,
+    Response,
+    status
+)
 
-router = APIRouter(tags=["Users"])
+from app.schemas.user_schema import (
+    UserCreate,
+    UserUpdate,
+    UserPatch,
+    UserResponse
+)
 
-# Base de datos temporal en memoria
-users = [
-    {
-        "id": 1,
-        "name": "Juan Perez",
-        "email": "juan@test.com",
-        "role": "admin",
-        "is_active": True
-    },
-    {
-        "id": 2,
-        "name": "Maria Gomez",
-        "email": "maria@test.com",
-        "role": "user",
-        "is_active": False
-    }
-]
+from app.dependencies.user_dependencies import (
+    get_user_or_404
+)
+
+from app.services.user_service import (
+    get_all_users,
+    create_user,
+    update_user,
+    patch_user,
+    delete_user
+)
+
+router = APIRouter(
+    prefix="",
+    tags=["Users"]
+)
 
 
 def add_headers(response: Response):
+
     response.headers["X-App-Name"] = "device_systems"
-    response.headers["X-API-Version"] = "1.0"
+    response.headers["X-API-Version"] = "2.0"
 
 
 @router.get(
     "/users",
-    response_model=list[UserResponse]
+    response_model=list[UserResponse],
+    summary="List users",
+    description="Returns all users",
+    response_description="List of users"
 )
 def get_users(
     response: Response,
     role: str | None = Query(default=None),
     is_active: bool | None = Query(default=None)
 ):
+
     add_headers(response)
 
-    result = users
-
-    if role is not None:
-        result = [user for user in result if user["role"] == role]
-
-    if is_active is not None:
-        result = [
-            user for user in result
-            if user["is_active"] == is_active
-        ]
-
-    return result
+    return get_all_users(role, is_active)
 
 
 @router.get(
     "/users/{user_id}",
-    response_model=UserResponse
+    response_model=UserResponse,
+    summary="Get user by id"
 )
-def get_user(user_id: int, response: Response):
+def get_user(
+    response: Response,
+    user=Depends(get_user_or_404)
+):
+
     add_headers(response)
 
-    for user in users:
-        if user["id"] == user_id:
-            return user
-
-    raise HTTPException(
-        status_code=404,
-        detail="User not found"
-    )
+    return user
 
 
 @router.post(
     "/users",
     response_model=UserResponse,
-    status_code=201
+    status_code=status.HTTP_201_CREATED,
+    summary="Create user"
 )
-def create_user(user: UserCreate, response: Response):
+def create_new_user(
+    user: UserCreate,
+    response: Response
+):
+
     add_headers(response)
 
-    for existing_user in users:
-        if existing_user["email"] == user.email:
-            raise HTTPException(
-                status_code=400,
-                detail="Email already exists"
-            )
+    return create_user(user.model_dump())
 
-    new_user = user.model_dump()
 
-    users.append(new_user)
+@router.put(
+    "/users/{user_id}",
+    response_model=UserResponse,
+    summary="Update user completely"
+)
+def replace_user(
+    user_id: int,
+    user: UserUpdate,
+    response: Response
+):
 
-    return new_user
+    add_headers(response)
+
+    return update_user(
+        user_id,
+        user.model_dump()
+    )
+
+
+@router.patch(
+    "/users/{user_id}",
+    response_model=UserResponse,
+    summary="Update user partially"
+)
+def modify_user(
+    user_id: int,
+    user: UserPatch,
+    response: Response
+):
+
+    add_headers(response)
+
+    update_data = user.model_dump(
+        exclude_unset=True
+    )
+
+    return patch_user(
+        user_id,
+        update_data
+    )
+
+
+@router.delete(
+    "/users/{user_id}",
+    status_code=status.HTTP_200_OK,
+    summary="Delete user"
+)
+def remove_user(
+    user_id: int,
+    response: Response
+):
+
+    add_headers(response)
+
+    return delete_user(user_id)
