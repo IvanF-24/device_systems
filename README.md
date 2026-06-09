@@ -314,3 +314,96 @@ Finalmente, esta práctica me permitió fortalecer conceptos relacionados con el
 # Link Video
 
 https://youtu.be/mDLfxfS1LoA
+
+
+# AO8
+## Descripción
+
+device_systems es una API REST desarrollada con FastAPI para la gestión de usuarios.
+
+La aplicación permite:
+
+- Crear usuarios.
+- Listar usuarios.
+- Consultar usuarios por ID.
+- Filtrar usuarios por rol y estado.
+- Actualizar usuarios completamente mediante PUT.
+- Actualizar usuarios parcialmente mediante PATCH.
+- Eliminar usuarios mediante DELETE.
+
+Además, implementa validaciones con Pydantic, manejo de errores con HTTPException, códigos de estado HTTP adecuados, Dependency Injection mediante Depends() y documentación automática con Swagger/OpenAPI.
+
+
+---
+
+## Explicar la estructura
+
+La guía lo pide explícitamente.
+
+```md
+## Explicación de la Estructura
+
+### routes
+Contiene los endpoints de la API.
+
+### schemas
+Contiene los modelos Pydantic utilizados para validar la información de entrada y salida.
+
+### services
+Contiene la lógica de negocio del recurso users.
+
+### dependencies
+Contiene funciones reutilizables implementadas mediante Dependency Injection utilizando Depends().
+
+### data
+Simula una base de datos en memoria mediante una lista de usuarios.
+
+## Endpoints Disponibles
+
+| Método | Endpoint | Descripción |
+|----------|----------|----------|
+| GET | /users | Obtener todos los usuarios |
+| GET | /users/{user_id} | Obtener usuario por ID |
+| GET | /users?role=admin | Filtrar por rol |
+| GET | /users?is_active=true | Filtrar por estado |
+| POST | /users | Crear usuario |
+| PUT | /users/{user_id} | Actualizar usuario completamente |
+| PATCH | /users/{user_id} | Actualizar parcialmente un usuario |
+| DELETE | /users/{user_id} | Eliminar usuario |
+
+## Uso de Dependency Injection
+
+Se implementó Dependency Injection mediante Depends() para reutilizar lógica común dentro de la aplicación.
+
+La función get_user_or_404() se utiliza para buscar un usuario por su identificador. Si el usuario existe, se devuelve el objeto correspondiente; de lo contrario, se genera una excepción HTTP 404.
+
+Gracias a Depends(), esta lógica puede reutilizarse en diferentes endpoints sin duplicar código.
+
+## Manejo de Errores
+
+La API implementa manejo de errores mediante HTTPException.
+
+Errores controlados:
+
+- Usuario no encontrado.
+- Correo electrónico duplicado.
+- Actualización parcial sin datos.
+- Eliminación de usuario inexistente.
+- Validaciones automáticas mediante Pydantic.
+
+Ejemplo:
+
+```json
+{
+  "detail": "User not found"
+}
+
+# Reflexión Final
+
+Durante esta actividad comprendí cómo una API REST puede evolucionar desde operaciones básicas de consulta y creación hacia una solución más completa y profesional.
+
+Aprendí a implementar operaciones de actualización y eliminación mediante los métodos PUT, PATCH y DELETE, así como a utilizar códigos de estado HTTP adecuados para cada situación. También entendí la importancia del manejo de errores mediante HTTPException para proporcionar respuestas claras a los clientes de la API.
+
+Otro aspecto importante fue el uso de Dependency Injection mediante Depends(), que permite reutilizar lógica y mejorar la organización del código. Finalmente, la documentación automática generada por Swagger UI y ReDoc facilitó la prueba y comprensión de todos los endpoints implementados.
+
+Esta actividad fortaleció mis conocimientos sobre FastAPI, diseño de APIs REST y buenas prácticas de desarrollo backend.
