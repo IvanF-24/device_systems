@@ -340,7 +340,7 @@ Además, implementa validaciones con Pydantic, manejo de errores con HTTPExcepti
 
 La guía lo pide explícitamente.
 
-```md
+
 ## Explicación de la Estructura
 
 ### routes
@@ -393,10 +393,45 @@ Errores controlados:
 
 Ejemplo:
 
-```json
+
 {
   "detail": "User not found"
 }
+
+
+---
+
+## 11. Agregar evidencias nuevas
+
+La guía pide capturas adicionales.
+
+
+# Evidencias de Funcionamiento
+
+## Swagger UI
+
+![imagen](images/AO8_6.png)
+
+## ReDoc
+
+![imagen](images/AO8_1.png)
+
+
+## PUT /users/{user_id}
+
+![imagen](images/AO8_4.png)
+
+## PATCH /users/{user_id}
+
+![imagen](images/AO8_3.png)
+
+## DELETE /users/{user_id}
+
+![imagen](images/AO8_2.png)
+
+## Consola
+
+![imagen](images/AO8_5.png)
 
 # Reflexión Final
 
