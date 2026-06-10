@@ -336,11 +336,6 @@ Además, implementa validaciones con Pydantic, manejo de errores con HTTPExcepti
 
 ---
 
-## Explicar la estructura
-
-La guía lo pide explícitamente.
-
-
 ## Explicación de la Estructura
 
 ### routes
@@ -442,3 +437,7 @@ Aprendí a implementar operaciones de actualización y eliminación mediante los
 Otro aspecto importante fue el uso de Dependency Injection mediante Depends(), que permite reutilizar lógica y mejorar la organización del código. Finalmente, la documentación automática generada por Swagger UI y ReDoc facilitó la prueba y comprensión de todos los endpoints implementados.
 
 Esta actividad fortaleció mis conocimientos sobre FastAPI, diseño de APIs REST y buenas prácticas de desarrollo backend.
+
+# Link Video 2
+
+https://youtu.be/lHaWwOxL5ro
