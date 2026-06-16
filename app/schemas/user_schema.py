@@ -1,17 +1,16 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Literal
+from datetime import datetime
 
 
 class UserCreate(BaseModel):
-    id: int
     name: str = Field(..., min_length=3)
     email: EmailStr
     role: Literal["admin", "support", "user"]
-    is_active: bool
+    is_active: bool = True
 
 
 class UserUpdate(BaseModel):
-    id: int
     name: str = Field(..., min_length=3)
     email: EmailStr
     role: Literal["admin", "support", "user"]
@@ -26,9 +25,14 @@ class UserPatch(BaseModel):
 
 
 class UserResponse(BaseModel):
+
     id: int
     name: str
     email: EmailStr
     role: str
     is_active: bool
-    
+    created_at: datetime
+
+    model_config = {
+        "from_attributes": True
+    }
