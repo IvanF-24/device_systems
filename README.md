@@ -316,7 +316,7 @@ Finalmente, esta práctica me permitió fortalecer conceptos relacionados con el
 https://youtu.be/mDLfxfS1LoA
 
 
-# AO8
+# EVO 8
 ## Descripción
 
 device_systems es una API REST desarrollada con FastAPI para la gestión de usuarios.
@@ -441,3 +441,357 @@ Esta actividad fortaleció mis conocimientos sobre FastAPI, diseño de APIs REST
 # Link Video 2
 
 https://youtu.be/lHaWwOxL5ro
+
+# EVO9
+
+
+## Descripción
+
+device_systems es una API REST desarrollada con FastAPI para la gestión de usuarios.
+
+En esta versión se incorporó persistencia de datos mediante SQLAlchemy y SQLite, permitiendo almacenar, consultar, actualizar y eliminar usuarios directamente desde una base de datos relacional.
+
+La API implementa operaciones CRUD completas, validaciones con Pydantic, manejo de errores mediante HTTPException y documentación automática con Swagger/OpenAPI.
+
+---
+
+## Tecnologías utilizadas
+
+- Python 3
+- FastAPI
+- Uvicorn
+- SQLAlchemy
+- Pydantic v2
+- SQLite
+- Swagger UI
+- ReDoc
+
+---
+
+## Estructura del proyecto
+
+```text
+device_systems/
+│
+├── app/
+│   ├── database/
+│   │   └── connection.py
+│   │
+│   ├── dependencies/
+│   │   └── database_dependency.py
+│   │
+│   ├── models/
+│   │   └── user_model.py
+│   │
+│   ├── routes/
+│   │   └── user_routes.py
+│   │
+│   ├── schemas/
+│   │   └── user_schema.py
+│   │
+│   ├── services/
+│   │   └── user_service.py
+│   │
+│   └── main.py
+│
+├── device_systems.db
+├── requirements.txt
+└── README.md
+```
+
+### Evidencia de la estructura del proyecto
+
+![imagen](images/EVO9.png)
+
+
+
+Instalar dependencias:
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## Ejecución
+
+Iniciar servidor:
+
+```bash
+uvicorn app.main:app --reload
+```
+
+Servidor:
+
+```text
+http://127.0.0.1:8000
+```
+
+Swagger UI:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+ReDoc:
+
+```text
+http://127.0.0.1:8000/redoc
+```
+
+---
+
+## Base de datos
+
+La aplicación utiliza SQLite para almacenar los usuarios.
+
+Archivo generado:
+
+```text
+device_systems.db
+```
+
+### Evidencia de la base de datos
+
+![imagen](images/EVO9_2.png)
+
+
+---
+
+# Endpoints
+
+| Método | Endpoint | Descripción |
+|----------|----------|----------|
+| GET | /users | Listar usuarios |
+| GET | /users/{id} | Obtener usuario por ID |
+| POST | /users | Crear usuario |
+| PUT | /users/{id} | Actualizar usuario completo |
+| PATCH | /users/{id} | Actualizar usuario parcialmente |
+| DELETE | /users/{id} | Eliminar usuario |
+
+---
+
+# Ejemplos de uso
+
+## Crear usuario
+
+### Request
+
+POST /users
+
+```json
+{
+  "name": "Ivan Florez",
+  "email": "ivan@test.com",
+  "role": "admin",
+  "is_active": true
+}
+```
+
+### Response
+
+```json
+{
+  "id": 1,
+  "name": "Ivan Florez",
+  "email": "ivan@test.com",
+  "role": "admin",
+  "is_active": true,
+  "created_at": "2026-06-16T00:00:00"
+}
+```
+
+### Evidencia
+
+![imagen](images/EVO9_4.png)
+
+
+---
+
+## Listar usuarios
+
+GET /users
+
+### Evidencia
+
+![imagen](images/EVO9_5.png)
+
+---
+
+## Consultar usuario por ID
+
+GET /users/2
+
+### Evidencia
+
+![imagen](images/EVO9_6.png)
+
+---
+
+## Actualizar usuario completo
+
+PUT /users/3
+
+### Evidencia
+
+![imagen](images/EVO9_7.png)
+
+
+---
+
+## Actualizar usuario parcialmente
+
+PATCH /users/2
+
+### Evidencia
+
+![imagen](images/EVO9_8.png)
+
+
+---
+
+## Eliminar usuario
+
+DELETE /users/1
+
+### Evidencia
+
+![imagen](images/EVO9_3.png)
+
+---
+
+# Validaciones y errores controlados
+
+## Email duplicado
+
+Código:
+
+```text
+400 Bad Request
+```
+
+Respuesta:
+
+```json
+{
+  "detail": "Email already exists"
+}
+```
+
+### Evidencia
+
+![imagen](images/EVO9_9.png)
+
+
+---
+
+## Usuario no encontrado
+
+Código:
+
+```text
+404 Not Found
+```
+
+Respuesta:
+
+```json
+{
+  "detail": "User not found"
+}
+```
+
+### Evidencia
+
+![imagen](images/EVO9_10.png)
+
+
+---
+
+## Error de validación
+
+Código:
+
+```text
+422 Unprocessable Entity
+```
+
+Ejemplo:
+
+```json
+{
+  "name": "Juan",
+  "email": "correo-invalido",
+  "role": "admin",
+  "is_active": true
+}
+```
+
+### Evidencia
+
+![imagen](images/EVO9_11.png)
+
+
+---
+
+# Diferencia entre modelo SQLAlchemy y schema Pydantic
+
+## Modelo SQLAlchemy
+
+El modelo SQLAlchemy representa la estructura de la tabla en la base de datos y permite realizar operaciones CRUD mediante el ORM.
+
+Ejemplo:
+
+```python
+class User(Base):
+```
+
+Funciones principales:
+
+- Crear tablas.
+- Definir columnas.
+- Aplicar restricciones.
+- Realizar consultas.
+
+## Schema Pydantic
+
+Los schemas Pydantic validan la información que recibe y devuelve la API.
+
+Ejemplo:
+
+```python
+class UserCreate(BaseModel):
+```
+
+Funciones principales:
+
+- Validar datos.
+- Validar correos electrónicos.
+- Controlar formatos.
+- Definir respuestas de la API.
+
+---
+
+# Swagger y ReDoc
+
+FastAPI genera automáticamente la documentación de la API.
+
+### Swagger UI
+
+![imagen](images/EVO9_12.png)
+
+
+### ReDoc
+
+![imagen](images/EVO9_13.png)
+
+
+---
+
+# Reflexión final
+
+Durante el desarrollo de esta actividad se evolucionó la API device_systems desde una implementación basada en estructuras de datos en memoria hacia una solución con persistencia real utilizando SQLAlchemy y SQLite.
+
+La integración de SQLAlchemy permitió comprender el uso de ORM para trabajar con bases de datos relacionales desde Python, facilitando la creación de modelos, consultas y operaciones CRUD. Asimismo, el uso de schemas Pydantic ayudó a validar la información de entrada y salida de la API, mejorando la calidad y seguridad de los datos.
+
+Finalmente, esta actividad permitió entender la importancia de la persistencia de datos en aplicaciones backend, así como la utilidad de FastAPI para construir APIs REST modernas, escalables y bien documentadas.

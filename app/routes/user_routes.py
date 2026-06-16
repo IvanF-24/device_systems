@@ -6,6 +6,8 @@ from fastapi import (
     status
 )
 
+from sqlalchemy.orm import Session
+
 from app.schemas.user_schema import (
     UserCreate,
     UserUpdate,
@@ -13,12 +15,11 @@ from app.schemas.user_schema import (
     UserResponse
 )
 
-from app.dependencies.user_dependencies import (
-    get_user_or_404
-)
+from app.dependencies.database_dependency import get_db
 
 from app.services.user_service import (
     get_all_users,
+    get_user_by_id,
     create_user,
     update_user,
     patch_user,
@@ -32,88 +33,115 @@ router = APIRouter(
 
 
 def add_headers(response: Response):
-
     response.headers["X-App-Name"] = "device_systems"
-    response.headers["X-API-Version"] = "2.0"
+    response.headers["X-API-Version"] = "3.0"
 
 
 @router.get(
     "/users",
     response_model=list[UserResponse],
     summary="List users",
-    description="Returns all users",
+    description="Returns all users with optional filters",
     response_description="List of users"
 )
 def get_users(
     response: Response,
     role: str | None = Query(default=None),
-    is_active: bool | None = Query(default=None)
+    is_active: bool | None = Query(default=None),
+    sort: str | None = Query(default=None),
+    db: Session = Depends(get_db)
 ):
 
     add_headers(response)
 
-    return get_all_users(role, is_active)
+    return get_all_users(
+        db,
+        role,
+        is_active,
+        sort
+    )
 
 
 @router.get(
     "/users/{user_id}",
     response_model=UserResponse,
-    summary="Get user by id"
+    summary="Get user by ID",
+    description="Returns a user by its ID",
+    response_description="User found"
 )
 def get_user(
+    user_id: int,
     response: Response,
-    user=Depends(get_user_or_404)
+    db: Session = Depends(get_db)
 ):
 
     add_headers(response)
 
-    return user
+    return get_user_by_id(
+        db,
+        user_id
+    )
 
 
 @router.post(
     "/users",
     response_model=UserResponse,
     status_code=status.HTTP_201_CREATED,
-    summary="Create user"
+    summary="Create user",
+    description="Creates a new user",
+    response_description="User created successfully"
 )
 def create_new_user(
     user: UserCreate,
-    response: Response
+    response: Response,
+    db: Session = Depends(get_db)
 ):
 
     add_headers(response)
 
-    return create_user(user.model_dump())
+    return create_user(
+        db,
+        user
+    )
 
 
 @router.put(
     "/users/{user_id}",
     response_model=UserResponse,
-    summary="Update user completely"
+    status_code=status.HTTP_200_OK,
+    summary="Update user completely",
+    description="Replaces all user information",
+    response_description="User updated successfully"
 )
 def replace_user(
     user_id: int,
     user: UserUpdate,
-    response: Response
+    response: Response,
+    db: Session = Depends(get_db)
 ):
 
     add_headers(response)
 
     return update_user(
+        db,
         user_id,
-        user.model_dump()
+        user
     )
 
 
 @router.patch(
     "/users/{user_id}",
     response_model=UserResponse,
-    summary="Update user partially"
+    status_code=status.HTTP_200_OK,
+    summary="Update user partially",
+    description="Updates one or more user fields",
+    response_description="User updated successfully"
 )
 def modify_user(
     user_id: int,
     user: UserPatch,
-    response: Response
+    response: Response,
+    db: Session = Depends(get_db)
 ):
 
     add_headers(response)
@@ -123,6 +151,7 @@ def modify_user(
     )
 
     return patch_user(
+        db,
         user_id,
         update_data
     )
@@ -131,13 +160,19 @@ def modify_user(
 @router.delete(
     "/users/{user_id}",
     status_code=status.HTTP_200_OK,
-    summary="Delete user"
+    summary="Delete user",
+    description="Deletes a user from the database",
+    response_description="User deleted successfully"
 )
 def remove_user(
     user_id: int,
-    response: Response
+    response: Response,
+    db: Session = Depends(get_db)
 ):
 
     add_headers(response)
 
-    return delete_user(user_id)
+    return delete_user(
+        db,
+        user_id
+    )

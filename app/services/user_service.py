@@ -1,67 +1,134 @@
 from fastapi import HTTPException
-from app.data.users_db import users
+from sqlalchemy.orm import Session
+from app.models.user_model import User
 
 
-def get_all_users(role=None, is_active=None):
+def get_all_users(
+    db: Session,
+    role: str = None,
+    is_active: bool = None,
+    sort: str = None
+):
+    query = db.query(User)
 
-    result = users
-
-    if role is not None:
-        result = [
-            user for user in result
-            if user["role"] == role
-        ]
+    if role:
+        query = query.filter(User.role == role)
 
     if is_active is not None:
-        result = [
-            user for user in result
-            if user["is_active"] == is_active
-        ]
+        query = query.filter(User.is_active == is_active)
 
-    return result
+    if sort == "name":
+        query = query.order_by(User.name)
 
+    elif sort == "created_at":
+        query = query.order_by(User.created_at)
 
-def create_user(user_data):
-
-    for user in users:
-        if user["email"] == user_data["email"]:
-            raise HTTPException(
-                status_code=400,
-                detail="Email already exists"
-            )
-
-    users.append(user_data)
-
-    return user_data
+    return query.all()
 
 
-def update_user(user_id, user_data):
+def get_user_by_id(
+    db: Session,
+    user_id: int
+):
+    user = (
+        db.query(User)
+        .filter(User.id == user_id)
+        .first()
+    )
 
-    for index, user in enumerate(users):
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
 
-        if user["id"] == user_id:
+    return user
 
-            for existing_user in users:
-                if (
-                    existing_user["email"] == user_data["email"]
-                    and existing_user["id"] != user_id
-                ):
-                    raise HTTPException(
-                        status_code=400,
-                        detail="Email already exists"
-                    )
 
-            users[index] = user_data
-
-            return user_data
-
-    raise HTTPException(
-        status_code=404,
-        detail="User not found"
+def get_user_by_email(
+    db: Session,
+    email: str
+):
+    return (
+        db.query(User)
+        .filter(User.email == email)
+        .first()
     )
 
 
-def patch_user(user_id, update_data):
+def create_user(
+    db: Session,
+    user_data
+):
+    existing_user = get_user_by_email(
+        db,
+        user_data.email
+    )
+
+    if existing_user:
+        raise HTTPException(
+            status_code=400,
+            detail="Email already exists"
+        )
+
+    user = User(
+        name=user_data.name,
+        email=user_data.email,
+        role=user_data.role,
+        is_active=user_data.is_active
+    )
+
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    return user
+
+
+def update_user(
+    db: Session,
+    user_id: int,
+    user_data
+):
+    user = get_user_by_id(
+        db,
+        user_id
+    )
+
+    existing_user = get_user_by_email(
+        db,
+        user_data.email
+    )
+
+    if (
+        existing_user
+        and existing_user.id != user_id
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="Email already exists"
+        )
+
+    user.name = user_data.name
+    user.email = user_data.email
+    user.role = user_data.role
+    user.is_active = user_data.is_active
+
+    db.commit()
+    db.refresh(user)
+
+    return user
+
+
+def patch_user(
+    db: Session,
+    user_id: int,
+    update_data: dict
+):
+    user = get_user_by_id(
+        db,
+        user_id
+    )
 
     if not update_data:
         raise HTTPException(
@@ -69,45 +136,43 @@ def patch_user(user_id, update_data):
             detail="No data provided for update"
         )
 
-    for user in users:
+    if "email" in update_data:
 
-        if user["id"] == user_id:
+        existing_user = get_user_by_email(
+            db,
+            update_data["email"]
+        )
 
-            if "email" in update_data:
+        if (
+            existing_user
+            and existing_user.id != user_id
+        ):
+            raise HTTPException(
+                status_code=400,
+                detail="Email already exists"
+            )
 
-                for existing_user in users:
-                    if (
-                        existing_user["email"] == update_data["email"]
-                        and existing_user["id"] != user_id
-                    ):
-                        raise HTTPException(
-                            status_code=400,
-                            detail="Email already exists"
-                        )
+    for key, value in update_data.items():
+        setattr(user, key, value)
 
-            user.update(update_data)
+    db.commit()
+    db.refresh(user)
 
-            return user
+    return user
 
-    raise HTTPException(
-        status_code=404,
-        detail="User not found"
+
+def delete_user(
+    db: Session,
+    user_id: int
+):
+    user = get_user_by_id(
+        db,
+        user_id
     )
 
+    db.delete(user)
+    db.commit()
 
-def delete_user(user_id):
-
-    for index, user in enumerate(users):
-
-        if user["id"] == user_id:
-
-            users.pop(index)
-
-            return {
-                "message": "User deleted successfully"
-            }
-
-    raise HTTPException(
-        status_code=404,
-        detail="User not found"
-    )
+    return {
+        "message": "User deleted successfully"
+    }
