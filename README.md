@@ -795,3 +795,9 @@ Durante el desarrollo de esta actividad se evolucionó la API device_systems des
 La integración de SQLAlchemy permitió comprender el uso de ORM para trabajar con bases de datos relacionales desde Python, facilitando la creación de modelos, consultas y operaciones CRUD. Asimismo, el uso de schemas Pydantic ayudó a validar la información de entrada y salida de la API, mejorando la calidad y seguridad de los datos.
 
 Finalmente, esta actividad permitió entender la importancia de la persistencia de datos en aplicaciones backend, así como la utilidad de FastAPI para construir APIs REST modernas, escalables y bien documentadas.
+
+
+
+# Link video 3
+
+https://youtu.be/epdIPZ_sSco
