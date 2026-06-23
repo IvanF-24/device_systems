@@ -829,25 +829,25 @@ Este proyecto corresponde a la evolución de la API `device_systems`, en la cual
 ## Migraciones con Alembic
 
 ### Inicialización de Alembic
-(Captura de ejecución)
+![imagen](images/EV10.png)
 - alembic init alembic
 
 ### Creación de migración automática
-(Captura de autogenerate)
+![imagen](images/EV10_2.png)
 - alembic revision --autogenerate -m "create devices and loans tables"
 
 ### Aplicación de migraciones
-(Captura de upgrade)
+![imagen](images/EV10_3.png)
 - alembic upgrade head
 
 ### Historial de migraciones
 - alembic history
-
+![imagen](images/EV10_4.png)
 ---
 
 ## Estructura de base de datos
 
-(Captura de tablas generadas)
+![imagen](images/EV10_5.png)
 
 - users
 - devices
@@ -857,7 +857,7 @@ Este proyecto corresponde a la evolución de la API `device_systems`, en la cual
 
 ## Documentación API (Swagger)
 
-(Captura de /docs o /redoc)
+![imagen](images/EV10_6.png)
 
 - Users
 - Devices
@@ -865,38 +865,13 @@ Este proyecto corresponde a la evolución de la API `device_systems`, en la cual
 
 ---
 
-## Creación de registros
 
-### Usuario
-(Captura de POST /users)
+Reflexión
 
-### Dispositivo
-(Captura de POST /devices)
+La implementación de Alembic permitió gestionar cambios en la base de datos de forma controlada, asegurando la integridad de la información.
 
-### Préstamo
-(Captura de POST /loans)
+El uso de relaciones entre modelos facilitó la representación de escenarios reales como préstamos de dispositivos a usuarios.
 
----
+Las consultas con joins y filtros avanzados mejoraron la capacidad de análisis de la información, permitiendo obtener datos combinados de múltiples tablas de forma eficiente.
 
-## Consultas con JOINs
-
-(Captura de endpoint /loans/details o consultas relacionadas)
-
-Ejemplo de respuesta:
-
-```json
-{
-  "loan_id": 1,
-  "status": "active",
-  "user": {
-    "id": 1,
-    "name": "Nombre usuario",
-    "email": "correo@ejemplo.com"
-  },
-  "device": {
-    "id": 3,
-    "name": "Laptop Lenovo",
-    "serial_number": "LEN-001",
-    "device_type": "laptop"
-  }
-}
+Este proyecto demuestra la importancia de construir APIs escalables, mantenibles y basadas en buenas prácticas de desarrollo backend.
