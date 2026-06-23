@@ -801,3 +801,102 @@ Finalmente, esta actividad permitió entender la importancia de la persistencia 
 # Link video 3
 
 https://youtu.be/epdIPZ_sSco
+
+
+
+## EV10
+
+# device_systems - EV10 FastAPI Avanzado
+
+
+## Descripción del proyecto
+
+Este proyecto corresponde a la evolución de la API `device_systems`, en la cual se implementan migraciones con Alembic, relaciones entre modelos (User, Device y Loan) y consultas avanzadas con joins y filtros. El sistema permite gestionar usuarios, dispositivos tecnológicos y préstamos de forma estructurada y escalable.
+
+---
+
+## Tecnologías utilizadas
+
+- FastAPI
+- SQLAlchemy
+- Alembic
+- MySQL
+- Pydantic
+- Swagger 
+
+---
+
+## Migraciones con Alembic
+
+### Inicialización de Alembic
+(Captura de ejecución)
+- alembic init alembic
+
+### Creación de migración automática
+(Captura de autogenerate)
+- alembic revision --autogenerate -m "create devices and loans tables"
+
+### Aplicación de migraciones
+(Captura de upgrade)
+- alembic upgrade head
+
+### Historial de migraciones
+- alembic history
+
+---
+
+## Estructura de base de datos
+
+(Captura de tablas generadas)
+
+- users
+- devices
+- loans
+
+---
+
+## Documentación API (Swagger)
+
+(Captura de /docs o /redoc)
+
+- Users
+- Devices
+- Loans
+
+---
+
+## Creación de registros
+
+### Usuario
+(Captura de POST /users)
+
+### Dispositivo
+(Captura de POST /devices)
+
+### Préstamo
+(Captura de POST /loans)
+
+---
+
+## Consultas con JOINs
+
+(Captura de endpoint /loans/details o consultas relacionadas)
+
+Ejemplo de respuesta:
+
+```json
+{
+  "loan_id": 1,
+  "status": "active",
+  "user": {
+    "id": 1,
+    "name": "Nombre usuario",
+    "email": "correo@ejemplo.com"
+  },
+  "device": {
+    "id": 3,
+    "name": "Laptop Lenovo",
+    "serial_number": "LEN-001",
+    "device_type": "laptop"
+  }
+}
