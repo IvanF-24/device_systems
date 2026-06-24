@@ -801,3 +801,77 @@ Finalmente, esta actividad permitió entender la importancia de la persistencia 
 # Link video 3
 
 https://youtu.be/epdIPZ_sSco
+
+
+
+## EV10
+
+# device_systems - EV10 FastAPI Avanzado
+
+
+## Descripción del proyecto
+
+Este proyecto corresponde a la evolución de la API `device_systems`, en la cual se implementan migraciones con Alembic, relaciones entre modelos (User, Device y Loan) y consultas avanzadas con joins y filtros. El sistema permite gestionar usuarios, dispositivos tecnológicos y préstamos de forma estructurada y escalable.
+
+---
+
+## Tecnologías utilizadas
+
+- FastAPI
+- SQLAlchemy
+- Alembic
+- MySQL
+- Pydantic
+- Swagger 
+
+---
+
+## Migraciones con Alembic
+
+### Inicialización de Alembic
+![imagen](images/EV10.png)
+- alembic init alembic
+
+### Creación de migración automática
+![imagen](images/EV10_2.png)
+- alembic revision --autogenerate -m "create devices and loans tables"
+
+### Aplicación de migraciones
+![imagen](images/EV10_3.png)
+- alembic upgrade head
+
+### Historial de migraciones
+- alembic history
+![imagen](images/EV10_4.png)
+---
+
+## Estructura de base de datos
+
+![imagen](images/EV10_5.png)
+
+- users
+- devices
+- loans
+
+---
+
+## Documentación API (Swagger)
+
+![imagen](images/EV10_6.png)
+
+- Users
+- Devices
+- Loans
+
+---
+
+
+Reflexión
+
+La implementación de Alembic permitió gestionar cambios en la base de datos de forma controlada, asegurando la integridad de la información.
+
+El uso de relaciones entre modelos facilitó la representación de escenarios reales como préstamos de dispositivos a usuarios.
+
+Las consultas con joins y filtros avanzados mejoraron la capacidad de análisis de la información, permitiendo obtener datos combinados de múltiples tablas de forma eficiente.
+
+Este proyecto demuestra la importancia de construir APIs escalables, mantenibles y basadas en buenas prácticas de desarrollo backend.

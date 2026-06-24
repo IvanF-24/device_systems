@@ -13,9 +13,9 @@ from sqlalchemy.orm import relationship
 from app.database.connection import Base
 
 
-class User(Base):
+class Device(Base):
 
-    __tablename__ = "users"
+    __tablename__ = "devices"
 
     id = Column(
         Integer,
@@ -28,19 +28,24 @@ class User(Base):
         nullable=False
     )
 
-    email = Column(
+    serial_number = Column(
         String,
         unique=True,
         nullable=False,
         index=True
     )
 
-    role = Column(
+    device_type = Column(
         String,
         nullable=False
     )
 
-    is_active = Column(
+    brand = Column(
+        String,
+        nullable=True
+    )
+
+    is_available = Column(
         Boolean,
         default=True
     )
@@ -52,5 +57,5 @@ class User(Base):
 
     loans = relationship(
         "Loan",
-        back_populates="user"
+        back_populates="device"
     )
