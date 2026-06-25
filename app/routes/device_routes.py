@@ -6,6 +6,10 @@ from fastapi import status
 from sqlalchemy.orm import Session
 
 from app.dependencies.database_dependency import get_db
+from app.dependencies.auth_dependency import (
+    require_admin,
+    require_roles
+)
 
 from app.schemas.device_schema import (
     DeviceCreate,
@@ -70,7 +74,8 @@ def get_device(
 )
 def create_new_device(
     device: DeviceCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user=Depends(require_roles("admin", "support"))
 ):
     return create_device(
         db,
@@ -85,7 +90,8 @@ def create_new_device(
 def replace_device(
     device_id: int,
     device: DeviceUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user=Depends(require_roles("admin", "support"))
 ):
     return update_device(
         db,
@@ -115,7 +121,8 @@ def modify_device(
 )
 def remove_device(
     device_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user=Depends(require_admin)
 ):
     return delete_device(
         db,
