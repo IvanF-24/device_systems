@@ -1,6 +1,8 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+
 from app.models.user_model import User
+from app.auth.security import get_password_hash
 
 
 def get_all_users(
@@ -74,6 +76,7 @@ def create_user(
     user = User(
         name=user_data.name,
         email=user_data.email,
+        hashed_password=get_password_hash(user_data.password),
         role=user_data.role,
         is_active=user_data.is_active
     )
@@ -100,10 +103,7 @@ def update_user(
         user_data.email
     )
 
-    if (
-        existing_user
-        and existing_user.id != user_id
-    ):
+    if existing_user and existing_user.id != user_id:
         raise HTTPException(
             status_code=400,
             detail="Email already exists"
@@ -137,16 +137,12 @@ def patch_user(
         )
 
     if "email" in update_data:
-
         existing_user = get_user_by_email(
             db,
             update_data["email"]
         )
 
-        if (
-            existing_user
-            and existing_user.id != user_id
-        ):
+        if existing_user and existing_user.id != user_id:
             raise HTTPException(
                 status_code=400,
                 detail="Email already exists"

@@ -2,6 +2,7 @@ from fastapi import (
     APIRouter,
     Depends,
     Query,
+    Request,
     Response,
     status
 )
@@ -16,6 +17,10 @@ from app.schemas.user_schema import (
 )
 
 from app.dependencies.database_dependency import get_db
+from app.dependencies.auth_dependency import (
+    get_current_active_user,
+    limiter
+)
 
 from app.services.user_service import (
     get_all_users,
@@ -44,12 +49,15 @@ def add_headers(response: Response):
     description="Returns all users with optional filters",
     response_description="List of users"
 )
+@limiter.limit("30/minute")
 def get_users(
+    request: Request,
     response: Response,
     role: str | None = Query(default=None),
     is_active: bool | None = Query(default=None),
     sort: str | None = Query(default=None),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_active_user)
 ):
 
     add_headers(response)
@@ -72,7 +80,8 @@ def get_users(
 def get_user(
     user_id: int,
     response: Response,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_active_user)
 ):
 
     add_headers(response)
