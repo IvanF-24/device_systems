@@ -1,3 +1,10 @@
+#### Todos los videos:
+- https://youtu.be/mDLfxfS1LoA  Ev07
+- https://youtu.be/lHaWwOxL5ro  Ev08
+- https://youtu.be/epdIPZ_sSco  Ev09
+- https://youtu.be/Fl4qdM1U2kk  Ev10
+- https://youtu.be/SJQyjImKjCc  Ev11
+
 # Device Systems - API REST de Gestión de Usuarios
 
 ## Descripción
@@ -875,3 +882,269 @@ El uso de relaciones entre modelos facilitó la representación de escenarios re
 Las consultas con joins y filtros avanzados mejoraron la capacidad de análisis de la información, permitiendo obtener datos combinados de múltiples tablas de forma eficiente.
 
 Este proyecto demuestra la importancia de construir APIs escalables, mantenibles y basadas en buenas prácticas de desarrollo backend.
+
+# Video 4
+https://youtu.be/Fl4qdM1U2kk
+
+
+## EV11 – Seguridad, autenticación y protección de endpoints
+
+En esta evolución del proyecto device_systems se implementó una capa de seguridad para proteger la API REST. Se conservaron los recursos existentes de usuarios, dispositivos y préstamos, y se agregaron autenticación, autorización por roles, middleware, CORS y rate limiting.
+
+# Funcionalidades implementadas
+
+- Registro de usuarios con contraseña segura.
+- Almacenamiento de contraseñas mediante hash con passlib y bcrypt.
+- Inicio de sesión mediante OAuth2 y JWT.
+- Generación de token de acceso tipo Bearer.
+- Consulta de información del usuario autenticado.
+- Protección de rutas mediante token JWT.
+- Control de acceso por roles: admin, support y user.
+- Validaciones avanzadas con Pydantic v2.
+- Middleware personalizado para trazabilidad de peticiones.
+- Configuración CORS para permitir clientes autorizados.
+- Rate limiting para limitar solicitudes repetidas.
+- Migración Alembic para agregar el campo hashed_password a la tabla  users.
+
+# Estructura agregada para seguridad
+
+- app/
+- │── auth/
+- │   ├── auth_routes.py
+- │   ├── auth_service.py
+- │   └── security.py
+- │
+- │── dependencies/
+- │   └── auth_dependency.py
+- │
+- │── middlewares/
+- │   └── request_middleware.py
+- │
+- │── schemas/
+- │   └── auth_schema.py
+- │
+- │── .env
+- │── .env.example
+`
+# Dependencias de seguridad
+ 
+Las siguientes dependencias fueron agregadas al proyecto:
+
+- python-jose[cryptography]
+- passlib[bcrypt]
+- slowapi
+- python-multipart
+- python-dotenv
+- Variables de entorno
+----
+El proyecto utiliza un archivo .env para almacenar configuraciones sensibles, como la clave secreta usada para firmar los tokens JWT.
+
+Ejemplo del archivo .env.example:
+``
+SECRET_KEY=coloca_una_clave_secreta_segura
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=60
+``
+
+El archivo .env no debe subirse al repositorio, ya que contiene información sensible.
+
+# Migración de autenticación
+
+Se creó una migración con Alembic para agregar el campo hashed_password a la tabla users.
+
+- Comandos utilizados:
+
+alembic revision --autogenerate -m "add authentication fields to users"
+alembic upgrade head
+
+La contraseña no se guarda en texto plano. Antes de registrar un usuario, se convierte en un hash seguro utilizando passlib.
+
+# Registro de usuario
+
+- Endpoint:
+
+``
+POST /auth/register
+``
+
+Ejemplo de solicitud:
+
+``{
+  "name": "Ivan Florez",
+  "email": "ivan@example.com",
+  "password": "ClaveSegura123",
+  "role": "admin",
+  "is_active": true
+}``
+
+### La contraseña debe cumplir las siguientes reglas:
+
+- Tener mínimo 8 caracteres.
+- Tener al menos una letra mayúscula.
+- Tener al menos una letra minúscula.
+- Tener al menos un número.
+- No contener espacios.
+- Inicio de sesión
+
+### Endpoint:
+``
+POST /auth/login
+``
+
+- Ejemplo de solicitud:
+
+{
+  "email": "ivan@example.com",
+  "password": "ClaveSegura123"
+}
+
+- Ejemplo de respuesta:
+
+{
+  "access_token": "token_jwt_generado",
+  "token_type": "bearer"
+}
+
+El token generado debe enviarse en las solicitudes protegidas mediante el encabezado:
+
+Authorization: Bearer TOKEN_JWT
+Usuario autenticado
+
+- Endpoint:
+
+GET /auth/me
+
+Este endpoint retorna la información del usuario autenticado a partir del token JWT enviado.
+
+La respuesta no expone el campo hashed_password.
+
+Roles y autorización
+
+## La API maneja los siguientes roles:
+
+Rol	Permisos principales
+admin	Administración completa de usuarios, dispositivos y préstamos.
+support	Gestión de dispositivos y préstamos según los permisos configurados.
+user	Consulta de información permitida y creación de préstamos autenticados.
+
+Las rutas protegidas implementan validación de token y validación de rol.
+
+## Ruta	Protección aplicada
+- GET /users	Usuario autenticado
+- GET /users/{user_id}	Usuario autenticado
+- POST /devices	Rol admin o support
+- PUT /devices/{device_id}	Rol admin o support
+- DELETE /devices/{device_id}	Rol admin
+- POST /loans	Usuario autenticado
+- PATCH /loans/{loan_id}/return	Rol admin o support
+- GET /loans/details	Rol admin o support
+
+Cuando no se envía un token o el token no es válido, la API responde con:
+
+#### 401 Unauthorized
+
+Cuando el usuario está autenticado, pero no tiene el rol necesario, la API responde con:
+
+#### 403 Forbidden
+Configuración CORS
+
+Se configuró CORSMiddleware para permitir solicitudes desde clientes locales durante el desarrollo.
+
+Orígenes permitidos:
+
+- http://localhost:5173
+- http://localhost:3000
+---
+La configuración permite credenciales, métodos y cabeceras necesarias para que un frontend autorizado pueda consumir la API.
+
+En producción no se recomienda usar allow_origins=["*"] cuando allow_credentials=True, porque permitiría solicitudes desde cualquier origen y aumentaría el riesgo de accesos no autorizados. En un entorno real se deben definir únicamente los dominios confiables.
+
+### Middleware personalizado
+
+Se implementó un middleware global para mejorar la trazabilidad de las solicitudes.
+
+El middleware realiza las siguientes acciones:
+
+- Mide el tiempo de procesamiento de cada petición.
+- Agrega la cabecera X-Process-Time.
+- Agrega la cabecera X-App-Name: device_systems.
+- Genera o conserva la cabecera X-Request-ID.
+- Registra el método HTTP, la ruta y el código de estado de cada petición.
+
+Ejemplo de cabeceras generadas:
+
+- X-App-Name: device_systems
+- X-Process-Time: 0.0042
+- X-Request-ID: 8f42e9c1
+----
+### Rate limiting
+
+Se implementó rate limiting con slowapi para limitar la cantidad de solicitudes realizadas por un cliente.
+
+Límites configurados:
+
+- Endpoint	Límite
+- POST /auth/login	5 solicitudes por minuto
+- POST /auth/register	3 solicitudes por minuto
+- GET /users	30 solicitudes por minuto
+- POST /loans	10 solicitudes por minuto
+
+Cuando se supera el límite, la API responde con:
+
+429 Too Many Requests
+Pruebas funcionales realizadas
+
+### Durante las pruebas se validaron los siguientes escenarios:
+
+- Registro de usuario con contraseña segura.
+- Registro rechazado con contraseña débil.
+- Registro rechazado con correo duplicado.
+- Inicio de sesión correcto y generación de token JWT.
+- Inicio de sesión rechazado con contraseña incorrecta.
+- Consulta de GET /auth/me.
+- Acceso a ruta protegida sin token.
+- Acceso a ruta protegida con token inválido.
+- Acceso denegado para un usuario sin el rol requerido.
+- Creación de dispositivo con rol permitido.
+- Intento de eliminación de dispositivo con rol no permitido.
+- Validación de configuración CORS.
+- Validación de cabeceras generadas por middleware.
+- Prueba de rate limiting.
+- Verificación de Swagger/OpenAPI con OAuth2.
+
+## Evidencias
+
+
+Luego agregar las imágenes al README:
+
+# Estructura
+![Estructura del proyecto](images/EV11/estructura_proyecto.png)
+
+# Migracion
+![Migración Alembic aplicada](images/EV11/migracion_alembic.png)
+
+# Registro de usuario
+![Registro de usuario](images/EV11/resgistro_usuario.png)
+
+# Login y Token Jwt
+![Login y token JWT](images/EV11/login_token.png)
+
+# Consulta de Usuario autenticado
+![Consulta de usuario autenticado](images/EV11/auth_me.png)
+
+# Acceso con rol no permitido
+![Acceso con rol no permitido](images/EV11/acceso_rol_no_permitido.png)
+
+# OAuth2
+![Swagger con OAuth2](images/EV11/swagger_oauth2.png)
+
+## Reflexión final
+
+La implementación de seguridad en una API REST es necesaria para proteger los recursos y controlar quién puede acceder a cada funcionalidad.
+
+El uso de hash de contraseñas evita almacenar credenciales en texto plano. JWT permite autenticar usuarios sin mantener sesiones en el servidor, mientras que la autorización por roles permite restringir operaciones según las responsabilidades de cada usuario.
+
+Además, CORS controla qué clientes pueden consumir la API, el middleware mejora la trazabilidad de las solicitudes y el rate limiting ayuda a prevenir abuso o ataques de fuerza bruta en endpoints sensibles como el inicio de sesión.
+
+## Video 5
+https://youtu.be/SJQyjImKjCc

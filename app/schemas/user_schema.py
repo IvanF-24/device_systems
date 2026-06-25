@@ -6,6 +6,7 @@ from datetime import datetime
 class UserCreate(BaseModel):
     name: str = Field(..., min_length=3)
     email: EmailStr
+    password: str = Field(..., min_length=6)
     role: Literal["admin", "support", "user"]
     is_active: bool = True
 
@@ -25,7 +26,6 @@ class UserPatch(BaseModel):
 
 
 class UserResponse(BaseModel):
-
     id: int
     name: str
     email: EmailStr
@@ -36,3 +36,4 @@ class UserResponse(BaseModel):
     model_config = {
         "from_attributes": True
     }
+

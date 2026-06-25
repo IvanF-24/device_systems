@@ -5,10 +5,8 @@ from sqlalchemy import (
     Boolean,
     DateTime
 )
-
-from datetime import datetime
-
 from sqlalchemy.orm import relationship
+from datetime import datetime
 
 from app.database.connection import Base
 
@@ -35,9 +33,15 @@ class User(Base):
         index=True
     )
 
-    role = Column(
+    hashed_password = Column(
         String,
         nullable=False
+    )
+
+    role = Column(
+        String,
+        nullable=False,
+        default="user"
     )
 
     is_active = Column(
