@@ -1,3 +1,10 @@
+#### Todos los videos:
+- https://youtu.be/mDLfxfS1LoA  Ev07
+- https://youtu.be/lHaWwOxL5ro  Ev08
+- https://youtu.be/epdIPZ_sSco  Ev09
+- https://youtu.be/Fl4qdM1U2kk  Ev10
+- https://youtu.be/SJQyjImKjCc  Ev11
+
 # Device Systems - API REST de Gestión de Usuarios
 
 ## Descripción
@@ -877,7 +884,7 @@ Las consultas con joins y filtros avanzados mejoraron la capacidad de análisis 
 Este proyecto demuestra la importancia de construir APIs escalables, mantenibles y basadas en buenas prácticas de desarrollo backend.
 
 # Video 4
-
+https://youtu.be/Fl4qdM1U2kk
 
 
 ## EV11 – Seguridad, autenticación y protección de endpoints
@@ -900,24 +907,25 @@ En esta evolución del proyecto device_systems se implementó una capa de seguri
 - Migración Alembic para agregar el campo hashed_password a la tabla  users.
 
 # Estructura agregada para seguridad
-app/
-│── auth/
-│   ├── auth_routes.py
-│   ├── auth_service.py
-│   └── security.py
-│
-│── dependencies/
-│   └── auth_dependency.py
-│
-│── middlewares/
-│   └── request_middleware.py
-│
-│── schemas/
-│   └── auth_schema.py
-│
-│── .env
-│── .env.example
 
+- app/
+- │── auth/
+- │   ├── auth_routes.py
+- │   ├── auth_service.py
+- │   └── security.py
+- │
+- │── dependencies/
+- │   └── auth_dependency.py
+- │
+- │── middlewares/
+- │   └── request_middleware.py
+- │
+- │── schemas/
+- │   └── auth_schema.py
+- │
+- │── .env
+- │── .env.example
+`
 # Dependencias de seguridad
  
 Las siguientes dependencias fueron agregadas al proyecto:
@@ -1012,7 +1020,7 @@ La respuesta no expone el campo hashed_password.
 
 Roles y autorización
 
-La API maneja los siguientes roles:
+## La API maneja los siguientes roles:
 
 Rol	Permisos principales
 admin	Administración completa de usuarios, dispositivos y préstamos.
@@ -1086,7 +1094,7 @@ Cuando se supera el límite, la API responde con:
 429 Too Many Requests
 Pruebas funcionales realizadas
 
-Durante las pruebas se validaron los siguientes escenarios:
+### Durante las pruebas se validaron los siguientes escenarios:
 
 - Registro de usuario con contraseña segura.
 - Registro rechazado con contraseña débil.
@@ -1106,18 +1114,6 @@ Durante las pruebas se validaron los siguientes escenarios:
 
 ## Evidencias
 
-
-evidencias/
-├── estructura_proyecto.png
-├── migracion_auth.png
-├── registro_usuario.png
-├── login_token.png
-├── auth_me.png
-├── acceso_sin_token.png
-├── acceso_rol_no_permitido.png
-├── swagger_oauth2.png
-├── middleware_headers.png
-└── rate_limiting.png
 
 Luego agregar las imágenes al README:
 
@@ -1149,3 +1145,6 @@ La implementación de seguridad en una API REST es necesaria para proteger los r
 El uso de hash de contraseñas evita almacenar credenciales en texto plano. JWT permite autenticar usuarios sin mantener sesiones en el servidor, mientras que la autorización por roles permite restringir operaciones según las responsabilidades de cada usuario.
 
 Además, CORS controla qué clientes pueden consumir la API, el middleware mejora la trazabilidad de las solicitudes y el rate limiting ayuda a prevenir abuso o ataques de fuerza bruta en endpoints sensibles como el inicio de sesión.
+
+## Video 5
+https://youtu.be/SJQyjImKjCc
